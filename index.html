@@ -149,10 +149,9 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     
     <script>
-        // Menunggu semua konten HTML dimuat sebelum menjalankan skrip
         document.addEventListener('DOMContentLoaded', () => {
 
-            // --- Daftar Pertanyaan Gemas ---
+            // --- Daftar Pertanyaan (Sudah Ditambah) ---
             const questions = [
                 {
                     question: "Ada 3 apel 🍎🍎🍎, ditambah 2 apel 🍎🍎. Jadi ada berapa apel?",
@@ -185,10 +184,43 @@
                         { text: "6 mata", correct: true },
                         { text: "4 mata", correct: false },
                     ]
+                },
+                // --- SOAL TAMBAHAN BARU ---
+                {
+                    question: "Budi punya 5 kelereng 🔵. Dia menang 3 lagi, tapi 1 kelereng jatuh. Berapa sisa kelereng Budi?",
+                    answers: [
+                        { text: "8 kelereng", correct: false },
+                        { text: "6 kelereng", correct: false },
+                        { text: "7 kelereng", correct: true }, // 5 + 3 - 1
+                    ]
+                },
+                {
+                    question: "Ada 3 pot 🪴, masing-masing ada 3 bunga 🌸. Berapa total bunganya?",
+                    answers: [
+                        { text: "9 bunga", correct: true }, // 3 * 3
+                        { text: "6 bunga", correct: false },
+                        { text: "12 bunga", correct: false },
+                    ]
+                },
+                {
+                    question: "Ibu punya 10 permen 🍬. Dibagi rata ke Ani dan Budi (2 anak). Berapa permen yang didapat tiap anak?",
+                    answers: [
+                        { text: "4 permen", correct: false },
+                        { text: "5 permen", correct: true }, // 10 / 2
+                        { text: "6 permen", correct: false },
+                    ]
+                },
+                {
+                    question: "Berapa hasil dari 4 bintang ⭐ ditambah 4 bintang ⭐?",
+                    answers: [
+                        { text: "7 bintang", correct: false },
+                        { text: "9 bintang", correct: false },
+                        { text: "8 bintang", correct: true }, // 4 + 4
+                    ]
                 }
             ];
 
-            // --- Referensi Elemen HTML ---
+            // --- Referensi Elemen HTML (Tetap sama) ---
             const questionContainer = document.getElementById('question-area');
             const questionText = document.getElementById('question-text');
             const answerButtons = document.getElementById('answer-buttons');
@@ -199,11 +231,10 @@
             const scoreFeedback = document.getElementById('score-feedback');
             const restartBtn = document.getElementById('restart-btn');
 
-            // --- Variabel Status Kuis ---
             let currentQuestionIndex = 0;
             let score = 0;
 
-            // --- Fungsi Utama ---
+            // --- Fungsi Utama (Semua tetap sama) ---
 
             function startQuiz() {
                 currentQuestionIndex = 0;
@@ -214,25 +245,17 @@
             }
 
             function showQuestion() {
-                // Reset tampilan
                 resetState();
-                
-                // Ambil pertanyaan saat ini
                 let currentQuestion = questions[currentQuestionIndex];
-                questionText.innerHTML = currentQuestion.question; // Pakai innerHTML agar emoji terbaca
+                questionText.innerHTML = currentQuestion.question; 
 
-                // Buat tombol untuk setiap jawaban
                 currentQuestion.answers.forEach(answer => {
                     const button = document.createElement('button');
                     button.innerHTML = answer.text;
                     button.classList.add('btn', 'answer-btn');
-                    
-                    // Simpan data apakah jawaban ini benar
                     if (answer.correct) {
                         button.dataset.correct = answer.correct;
                     }
-                    
-                    // Tambahkan event listener saat tombol diklik
                     button.addEventListener('click', selectAnswer);
                     answerButtons.appendChild(button);
                 });
@@ -240,86 +263,10 @@
 
             function resetState() {
                 feedbackMessage.textContent = '';
-                feedbackMessage.className = 'text-center fw-bold fs-5'; // Reset kelas feedback
-                
-                // Hapus semua tombol jawaban lama
+                feedbackMessage.className = 'text-center fw-bold fs-5'; 
                 while (answerButtons.firstChild) {
                     answerButtons.removeChild(answerButtons.firstChild);
                 }
             }
 
-            function selectAnswer(e) {
-                const selectedBtn = e.target;
-                const isCorrect = selectedBtn.dataset.correct === 'true';
-
-                // Beri tanda visual benar/salah
-                if (isCorrect) {
-                    selectedBtn.classList.add('correct');
-                    feedbackMessage.textContent = 'Hebat! Kamu Benar! 🎉';
-                    feedbackMessage.classList.add('correct');
-                    score++;
-                } else {
-                    selectedBtn.classList.add('wrong');
-                    feedbackMessage.textContent = 'Oops, belum tepat! 🥺';
-                    feedbackMessage.classList.add('wrong');
-                }
-
-                // Nonaktifkan semua tombol setelah menjawab
-                Array.from(answerButtons.children).forEach(button => {
-                    button.disabled = true;
-                    // Tampilkan juga jawaban yang benar jika pengguna salah
-                    if (button.dataset.correct === 'true' && !isCorrect) {
-                        button.classList.add('correct');
-                    }
-                });
-
-                // Tampilkan tombol 'Lanjut' atau 'Lihat Skor'
-                const nextButton = document.createElement('button');
-                nextButton.classList.add('btn', 'btn-primary', 'mt-4');
-                
-                if (currentQuestionIndex < questions.length - 1) {
-                    nextButton.textContent = 'Lanjut ke Soal Berikutnya ➡️';
-                    nextButton.addEventListener('click', () => {
-                        currentQuestionIndex++;
-                        showQuestion();
-                    });
-                } else {
-                    nextButton.textContent = 'Lihat Hasilmu! 🏆';
-                    nextButton.addEventListener('click', showScore);
-                }
-                
-                answerButtons.appendChild(nextButton);
-            }
-
-            function showScore() {
-                questionContainer.classList.add('d-none');
-                scoreArea.classList.remove('d-none');
-                
-                scoreText.textContent = `Skormu: ${score} dari ${questions.length}!`;
-
-                // Beri feedback dan gambar lucu berdasarkan skor
-                if (score === questions.length) {
-                    scoreFeedback.textContent = 'Waah, Sempurna! Kamu Jenius! 🥳';
-                    // Ganti dengan URL gambar lucu/gif
-                    scoreImage.src = 'https://i.pinimg.com/originals/c4/31/68/c431684d0aff0d01c3f25c7b3400a94d.gif'; 
-                } else if (score >= questions.length / 2) {
-                    scoreFeedback.textContent = 'Kerja Bagus! Terus berlatih ya! 👍';
-                    // Ganti dengan URL gambar lucu/gif
-                    scoreImage.src = 'https://i.pinimg.com/originals/e3/c4/23/e3c423f793b89b4bd8e30b355152b9ba.gif'; 
-                } else {
-                    scoreFeedback.textContent = 'Jangan menyerah, coba lagi yuk! 😊';
-                    // Ganti dengan URL gambar lucu/gif
-                    scoreImage.src = 'https://i.pinimg.com/originals/3f/8a/31/3f8a31a31d04f21d3b03f0b2a75167b6.gif'; 
-                }
-            }
-
-            // Event listener untuk tombol restart
-            restartBtn.addEventListener('click', startQuiz);
-
-            // --- Mulai Kuis Saat Halaman Dibuka ---
-            startQuiz();
-        });
-    </script>
-
-</body>
-</html>
+            function select
